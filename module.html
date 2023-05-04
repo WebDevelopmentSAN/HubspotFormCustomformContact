@@ -1,0 +1,94 @@
+<div class="referral-outer">
+  <div class="page-center">
+    <div class="form-wrapper">
+      <div class="referral-inner"> 
+        <div class="logo-div">
+          {% if module.logo.src %}
+          {% set sizeAttrs = 'width="{{ module.logo.width }}" height="{{ module.logo.height }}"' %}
+          {% if module.logo.size_type == 'auto' %}
+          {% set sizeAttrs = 'width="{{ module.logo.width }}" height="{{ module.logo.height }}" style="max-width: 100%; height: auto;"' %}
+          {% elif module.logo.size_type == 'auto_custom_max' %}
+          {% set sizeAttrs = 'width="{{ module.logo.max_width }}" height="{{ module.logo.max_height }}" style="max-width: 100%; height: auto;"' %}
+          {% endif %}
+          {% set loadingAttr = module.logo.loading != 'disabled' ? 'loading="{{ module.logo.loading }}"' : '' %}
+          <img src="{{ module.logo.src }}" alt="{{ module.logo.alt }}" {{ loadingAttr }} {{ sizeAttrs }}>
+          {% endif %}
+        </div> 
+        <div class="text-div">
+
+          {{ module.right_text }}
+
+        </div>
+      </div>
+      <div class="form-div formContainer">
+        <form id="myForm">
+          <div class="resmed-emp-name-email-flex">
+            <div class=res-emp-name>
+              <label for="resmed-employee-name"><strong>ResMed Employee Name</strong></label>
+              <input type="text" id="resmed-employee-name" name="resmed-employee-name">
+            </div>
+            <div class=res-emp-email>
+              <label for="resmed-employee-email"><strong>ResMed Employee Email</strong></label>
+              <input type="text" id="resmed-employee-email" name="resmed-employee-email">
+            </div>
+          </div>
+          <p><strong>Referral contact details</strong></p>
+          <div class="ref-name-contact">
+            <div class="ref-name">
+              <label for="referral-contact-name">Name*</label>
+              <input type="text" id="referral-contact-name" class="required_field" name="referral-contact-name" >
+              <span id="nameError" class="error"></span>
+            </div>
+            <div class="ref-phone">
+              <label for="referral-contact-number">Contact number*</label>
+              <input type="tel" id="referral-contact-number" name="referral-contact-number" >  
+               <span id="phoneError" class="error"></span>
+            </div>
+          </div>
+          <label for="referral-contact-email">Email:</label>
+          <input type="text" id="referral-contact-email" name="referral-contact-email">
+          <span id="emailError" class="error"></span>
+          <div class="chkbx-tnc">
+            <label for="terms-and-conditions">I acknowledge and agree with the terms and conditions of this referral program. <a class="read-more">Read More</a>*</label>
+            <input type="checkbox" id="terms-and-conditions" name="terms-and-conditions" >
+          </div>
+          <span id="chkbxError" class="error"></span>
+          <div class="text-below-tc-div"><p class="text-below-tandc">By providing the contact details of the individual above, you confirm that you received their consent to share their personal data for the purpose of this referral program, and they understand that a ResMed team member may contact them about this program.</p></div>
+          <input id="submit-btn" class="submit-button-form" type="submit" value="Submit">
+
+        </form>
+        <div id="thankYouContainer" class="submitted-message" style="display:none">
+         {{ module.thank_you_message }}
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal">
+
+  <div class="modal-content">
+    <span class="close">x
+
+    </span>
+    <div class="modal-content-inner">
+      {{ module.popup_content }}
+    </div>
+  </div>
+</div>
+
+
+<style>
+  .referral-outer{
+    {% if module.style.background_style == "bg-col" %}
+    background-color:{{ module.style.background_color.color }};
+    {% elif module.style.background_style == "bg-gra" %}
+    background-image:{{ module.style.background_gradient.css }};
+    {% else  module.style.background_style == "bg-img" %}
+    background:url({{ module.style.backgroundimage_field.src }});
+    {% endif %}
+  }
+</style>
