@@ -30,6 +30,8 @@
             <div class=res-emp-email>
               <label for="resmed-employee-email"><strong>ResMed Employee Email</strong></label>
               <input type="text" id="resmed-employee-email" name="resmed-employee-email">
+              <span id="resmedEmpEmailError" class="error"></span>
+              <span id="specificDomainError" class="error"></span>
             </div>
           </div>
           <p><strong>Referral contact details</strong></p>
@@ -43,6 +45,7 @@
               <label for="referral-contact-number">Contact number*</label>
               <input type="tel" id="referral-contact-number" name="referral-contact-number" >  
                <span id="phoneError" class="error"></span>
+               <span id="phoneValidOrInvalid" class="error"></span>
             </div>
           </div>
           <label for="referral-contact-email">Email:</label>
