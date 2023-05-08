@@ -33,8 +33,8 @@ const thankYouMsg = document.getElementById('thankYouContainer');
 
 form.addEventListener("submit" , function(event) {
   event.preventDefault();
-
   //send value exp start
+validatePhoneNumber();
   const resEmpName = document.getElementById('resmed-employee-name');
   let resEmpNameValue = resEmpName.value;
 
@@ -49,10 +49,22 @@ form.addEventListener("submit" , function(event) {
 
   const emailField = document.getElementById('referral-contact-email');
   let emailValue = emailField.value.trim();
-  
+
+  //get date using js start
+
+  var dateISO;
+  var d = new Date();
+  d.setUTCHours(0,0,0,0);
+  dateISO = d.toISOString();
+  var dateParse = Date.parse(dateISO);
+  //   const currentDate = new Date();
+  // const utcDate = currentDate.toISOString();
+  // console.log(utcDate);
+  //get date using js end
 
   const emailInput = form.elements["referral-contact-email"];
   const emailError = document.getElementById("emailError");
+
   //const emailRegex = /\S+@\S+\.\S+/;
   const nameInput = form.elements["referral-contact-name"];
   const nameError = document.getElementById("nameError");
@@ -62,6 +74,9 @@ form.addEventListener("submit" , function(event) {
   nameError.textContent = "";
   phoneError.textContent = "";
   emailError.textContent = "";
+  resmedEmpEmailError.textContent = "";
+  specificDomainError.textContent = "";
+
   if (nameInput.value === "") {
     console.log(nameInput.value)
     nameError.textContent = "Please complete this required field.";
@@ -79,24 +94,25 @@ form.addEventListener("submit" , function(event) {
   else{
     chkbxError.textContent = "";
   }
-  
+
   if(!validateEmail(emailValue)){
- emailError.textContent = "Email must be formatted correctly.";
-}
-else{
-  emailError.textContent = "";
-}
-    
-      
-  if (refNameValue !== "" && refPhoneValue !== "" && checkbox.checked && validateEmail(emailValue)==true ) {
+    emailError.textContent = "Email must be formatted correctly.";
+  }
+  else{
+    emailError.textContent = "";
+  }
+
+  domainValidateEmail();
+  if (refNameValue !== "" && refPhoneValue !== "" && checkbox.checked && validateEmail(emailValue)==true && domainValidateEmail()==true && validatePhoneNumber()==true ) {
     form.style.display = 'none'; 
     thankYouMsg.style.display = 'block'; 
-    formv3(resEmpNameValue, resEmpEmailValue, refNameValue, refPhoneValue, emailValue, checkbox.checked );
+
+    formv3(resEmpNameValue, resEmpEmailValue, refNameValue, refPhoneValue, emailValue, checkbox.checked , dateParse );
   }
 
 });
 
-function formv3(resEmpNameValue1, resEmpEmailValue1, refNameValue1, refPhoneValue1, emailValue1, checkbox1) {
+function formv3(resEmpNameValue1, resEmpEmailValue1, refNameValue1, refPhoneValue1, emailValue1, checkbox1, dateparse1 ) {
   console.log(emailValue1, "FROM FUNC V3");
   var currentURL = window.location.href;
   var currentPageTitle = $(document).find("title").text();
@@ -107,7 +123,7 @@ function formv3(resEmpNameValue1, resEmpEmailValue1, refNameValue1, refPhoneValu
   console.log({finalmail});
   // Create the new request
   var xhr = new XMLHttpRequest();
-  var url = 'https://api.hsforms.com/submissions/v3/integration/submit/3445757/4e44bd73-72a2-4fa7-91dd-b13e87c1a48a'
+  var url = 'https://api.hsforms.com/submissions/v3/integration/submit/3445757/c870beb7-5aea-44a6-9626-d06548a1e8f5'
 
   // Example request JSON:
   var data = {
@@ -135,6 +151,10 @@ function formv3(resEmpNameValue1, resEmpEmailValue1, refNameValue1, refPhoneValu
       {
         "name": "terms_and_condition",
         "value": checkbox1
+      },
+      {
+        "name": "sg_referral_submission_date",
+        "value": dateparse1
       }
     ],
     "context": {
@@ -186,21 +206,59 @@ function formv3(resEmpNameValue1, resEmpEmailValue1, refNameValue1, refPhoneValu
 function validateEmail(email) {
   // Regular expression pattern to validate email format (with optional email address)
   const pattern = /^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  
+
   // Test the email against the pattern and return the result
   return pattern.test(email);
 }
 
-// Example usage
-const email1 = "example@example.com";
-const isValidEmail1 = validateEmail(email1);
-console.log(isValidEmail1); // true
+//resmed email domain validation
 
-const email2 = "";
-const isValidEmail2 = validateEmail(email2);
-console.log(isValidEmail2); // true
+function domainValidateEmail() {
+  // Get the email input field and its value
+  const emailInput = document.getElementById("resmed-employee-email");
+  const email = emailInput.value;
 
+  const resmedEmailInput =  form.elements["resmed-employee-email"];
+  const resmedEmpEmailError = document.getElementById("resmedEmpEmailError");
+  const specificDomainError = document.getElementById("specificDomainError");
 
+  // Check if the email is valid, allowing empty input or a valid email format
+  const emailRegex = /^$|^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (email !== '' && !emailRegex.test(email)) {
+    resmedEmpEmailError.textContent = "Please enter a valid email address.";
+    // alert("Please enter a valid email address.");
+    return false;
+  }
 
+  // Extract the domain name from the email
+  const domain = email.split("@")[1];
 
+  // Check if the domain is allowed, allowing empty domain
+  const allowedDomains = ["resmed.com", "resmed.com.au", "resmed.sg"];
+  if (email !== '' && !allowedDomains.includes(domain)) {
+    //  alert("Only email addresses from resmed.com, resmed.com.au, resmed.sg, or an empty field are allowed.");
+    specificDomainError.textContent = "Only Resmed employee email IDs are allowed.";
+    return false;
+  }
 
+  // Allow the form submission
+  return true;
+}
+
+// Phone number Validation
+function validatePhoneNumber() {
+
+  const refPhoneInput = document.getElementById("referral-contact-number");
+  const refPhone = refPhoneInput.value;
+  const phoneValid = document.getElementById("phoneValidOrInvalid");
+    var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
+  
+  if(!refPhone=="" && !re.test(refPhone)){
+    phoneValid.textContent = "Enter a valid phone number";
+
+  }
+  else{
+    phoneValid.textContent = "";
+  }
+  return re.test(refPhone);
+}
